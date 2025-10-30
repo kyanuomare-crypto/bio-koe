@@ -1,65 +1,88 @@
 // TOGGLE CLASS ACTIVE for hamburg
 const navbarNav = document.querySelector(".navbar-nav");
-//If hamburg is Clicked
-document.querySelector("#hamburg").onclick = () => {
-  navbarNav.classList.toggle("active");
-};
+const hamburger = document.querySelector("#hamburg");
+
+if (hamburger) {
+  hamburger.addEventListener("click", (e) => {
+    e.preventDefault();
+    navbarNav.classList.toggle("active");
+  });
+}
 
 // TOGGLE CLASS ACTIVE for search form
 const searchIcon = document.querySelector("#search");
 const searchForm = document.querySelector(".search-form");
 const searchBox = document.querySelector("#search-box");
 
-// If search is Clicked
-searchIcon.addEventListener("click", (event) => {
-  event.preventDefault();
-  searchForm.classList.toggle("active");
-});
-
-// Search Keywords
-const searchSubmit = document.querySelector("#search-submit");
-searchSubmit.addEventListener("click", (event) => {
-  event.preventDefault();
-  const query = searchBox.ariaValueMax.toLowerCase();
-  if (!query) {
-    alert("Please enter a search term.");
-    return;
-  }
-
-  // Find elements
-  const allElements = document.querySelectorAll("body*");
-  let found = false;
-  allElements.forEach((element) => {
-    if (element.textContent.toLowerCase().includes(query)) {
-      element.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-
-      element.style.backgroundColor = "yellow";
-      setTimeout(() => (element.style.backgroundColor = ""), 2000);
-      found = true;
+if (searchIcon && searchForm && searchBox) {
+  searchIcon.addEventListener("click", (event) => {
+    event.preventDefault();
+    searchForm.classList.toggle("active");
+    // focus the input when opened
+    if (searchForm.classList.contains("active")) {
+      searchBox.focus();
     }
   });
-  if (!found) {
-    alert("No matches found.");
+
+  // Use the label as the search submit (keeps HTML unchanged)
+  const searchLabel = document.querySelector(".search-form label");
+  if (searchLabel) {
+    searchLabel.addEventListener("click", (event) => {
+      event.preventDefault();
+      const query = searchBox.value.trim().toLowerCase();
+
+      if (!query) {
+        alert("Please enter a search term.");
+        return;
+      }
+
+      const allElements = document.querySelectorAll("body *");
+      let found = false;
+      allElements.forEach((element) => {
+        if (element.textContent.toLowerCase().includes(query)) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+          const prevBG = element.style.backgroundColor;
+          element.style.backgroundColor = "yellow";
+          setTimeout(() => {
+            element.style.backgroundColor = prevBG || "";
+          }, 2000);
+          found = true;
+        }
+      });
+
+      if (!found) {
+        alert("No matches found.");
+      }
+    });
   }
-});
+}
 
 // Click outside sidebar to remove nav
-const hamburger = document.querySelector("#hamburg");
-
 document.addEventListener("click", function (e) {
-  if (!hamburger.contains(e.target) && !navbarNav.contains(e.target)) {
+  const target = e.target;
+  // if the click isn't inside hamburger or navbar, hide navbar
+  if (
+    hamburger &&
+    navbarNav &&
+    !hamburger.contains(target) &&
+    !navbarNav.contains(target)
+  ) {
     navbarNav.classList.remove("active");
   }
 });
 
-// TO YOUTUBE
+// Console check
 console.log("Video gallery loaded successfully.");
 
-// CHANNEL LOGO
-document.getElementById("youtubeImage").addEventListener("click"),
-  function () {
-    window.location.href = "https://www.youtube.com/@KyanuOmarEagan";
-  };
+// FIXED: YouTube Image Click (safe fallback)
+const ytImage = document.getElementById("youtubeImage");
+if (ytImage) {
+  ytImage.addEventListener("click", function (e) {
+    // if the image is wrapped in an <a>, let it handle navigation;
+    // otherwise navigate to the channel.
+    const parentLink = ytImage.closest("a");
+    if (!parentLink) {
+      window.location.href = "https://www.youtube.com/@KyanuOmarEagan";
+    }
+  });
+}
